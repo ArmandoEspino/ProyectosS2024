@@ -174,12 +174,78 @@ def resolver_metodo_biseccion():
         print("\nNo se pudo encontrar una raíz dentro del intervalo especificado.")
         
 
+def diferencias_divididas(x, y):
+    n = len(x)
+    coeficientes = [0] * n
+    for i in range(n):
+        coeficientes[i] = y[i]
+
+    for j in range(1, n):
+        for i in range(n - 1, j - 1, -1):
+            coeficientes[i] = (coeficientes[i] - coeficientes[i - 1]) / (x[i] - x[i - j])
+
+    return coeficientes
+
+def evaluar_polinomio(x, coeficientes, valor):
+    n = len(x)
+    resultado = coeficientes[n - 1]
+    for i in range(n - 2, -1, -1):
+        resultado = resultado * (valor - x[i]) + coeficientes[i]
+    return resultado
+
+def interpolacion_diferencias_divididas():
+    print("Has seleccionado Polinomio de Interpolacion con diferencias divididas de Newton.")
+    # Pedir al usuario la información relacionada con los puntos
+    while True:
+        try:
+            n = int(input("Ingrese el número de puntos: "))
+            if n <= 0:
+                raise ValueError("El número de puntos debe ser un entero positivo.")
+            break
+        except ValueError as e:
+            print("Error:", e)
+
+    x = []
+    y = []
+    for i in range(n):
+        while True:
+            try:
+                punto_x = float(input("Ingrese el valor de x{}: ".format(i)))
+                punto_y = float(input("Ingrese el valor de y{}: ".format(i)))
+                x.append(punto_x)
+                y.append(punto_y)
+                break
+            except ValueError:
+                print("Error: Por favor, ingrese un número real válido.")
+
+    # Pedir al usuario el valor a interpolar
+    while True:
+        try:
+            valor_interpolar = float(input("Ingrese el valor a interpolar: "))
+            break
+        except ValueError:
+            print("Error: Por favor, ingrese un número real válido.")
+
+    # Calcular coeficientes
+    coeficientes = diferencias_divididas(x, y)
+
+    # Imprimir coeficientes
+    print("Los coeficientes del polinomio interpolante son:")
+    for i, coeficiente in enumerate(coeficientes):
+        print("c{} = {:.6f}".format(i, coeficiente))
+
+    # Evaluar el polinomio en el valor a interpolar
+    resultado = evaluar_polinomio(x, coeficientes, valor_interpolar)
+
+    print("El resultado de la interpolación en x =", valor_interpolar, "es y =", resultado)
+
+
 def menu():
     while True:
         print("\nSeleccione una de las siguientes opciones:")
         print("1. Eliminación gaussiana")
         print("2. Método de Bisección")
-        print("3. ...")
+        print("3. Polinomio de Interpolacion con diferencias divididas de Newton")
         print("4. ...")
         print("5. Cerrar el programa")
         
@@ -189,6 +255,8 @@ def menu():
             resolver_eliminacion_gaussiana()
         elif opcion == "2":
             resolver_metodo_biseccion()
+        elif opcion == "3":
+            interpolacion_diferencias_divididas()
         elif opcion == "5":
             print("Cerrando el programa...")
             break
